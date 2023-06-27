@@ -71,9 +71,47 @@ namespace EmployeeManagement.Controllers
                 });
 
             FakeData.Employees.Add(newEmployee);
-            _logger.LogInformation($"New Employee Who ID:{newEmployee.Id} Added!..");
+            _logger.LogInformation($"New Employee Who ID:{newEmployee.ID} Added!..");
 
             return Ok(newEmployee);
+        }
+
+
+        [HttpDelete("{id:int}")]
+        public IActionResult DeleteEmployee([FromRoute(Name = "id")] int id)
+        {
+            var entity = FakeData.Employees.Find(e => e.ID == id);
+
+            // when ID not exists on database
+            if (entity is null)
+                return NotFound(new
+                {
+                    statusCode = 404,
+                    message = $"id:{id} Isn't Exists On Database!.."
+                });
+
+            FakeData.Employees.Remove(entity);
+            _logger.LogWarning($"Employee Who ID:{id} Deleted!..");
+
+            return NoContent();
+        }
+
+
+        [HttpDelete]
+        public IActionResult DeleteEmployees()
+        {
+            // when database is empty
+            if (FakeData.Employees.Count == 0)
+                return NotFound(new
+                {
+                    statusCode = 404,
+                    message = "Database Is Empty!.."
+                });
+
+            FakeData.Employees.Clear();
+            _logger.LogWarning("All Employees Deleted!..");
+
+            return NoContent();
         }
     }
 }
