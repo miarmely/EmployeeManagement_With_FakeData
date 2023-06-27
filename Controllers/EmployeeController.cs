@@ -7,6 +7,10 @@ namespace EmployeeManagement.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
+        [HttpGet]
 
+        //[HttpGet("{id:int}")]
+
+        
     }
 }
