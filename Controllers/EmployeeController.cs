@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EmployeeManagement.Data;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace EmployeeManagement.Controllers
@@ -7,10 +8,9 @@ namespace EmployeeManagement.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        [HttpGet]
+        public readonly ILogger<EmployeeController> _logger;
 
-        //[HttpGet("{id:int}")]
 
-        
+        public EmployeeController(ILogger<EmployeeController> logger) => _logger = logger;
     }
 }
