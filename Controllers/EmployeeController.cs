@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Data;
+using EmployeeManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -31,19 +32,48 @@ namespace EmployeeManagement.Controllers
 
 
         [HttpGet("{id:int}")]
-        public IActionResult getEmployee([FromRoute(Name = "id")] int id)
+        public IActionResult GetEmployee([FromRoute(Name = "id")] int id)
         {
-            // when not matched any employee
             var entity = FakeData.Employees.Find(e => e.ID == id);
+
+            // when not matched any employee
             if (entity is null)
                 return BadRequest(new
                 {
                     statusCode = 400,
-                    message = $"ID:{id} Is Not Exists On Database!.."
+                    message = $"ID:{id} Isn't Exists On Database!.."
                 });
 
             _logger.LogInformation($"ID:{id} Employee Displayed.");
             return Ok(entity);
+        }
+
+
+        [HttpPost]
+        public IActionResult AddEmployee([FromBody] Employee newEmployee)
+        {
+            // when ID is invalid
+            if (newEmployee.ID <= 0)
+                return BadRequest(new
+                {
+                    statusCode = 400,
+                    message = "ID Must Be Greater Than 0"
+                });
+
+            var entity = FakeData.Employees.Find(e => e.ID == newEmployee.ID);
+
+            // when ID is already exists on database.
+            if (entity is not null)
+                return BadRequest(new
+                {
+                    statusCode = 400,
+                    message = $"ID:{newEmployee.ID} Is Already Exists On Database!.."
+                });
+
+            FakeData.Employees.Add(newEmployee);
+            _logger.LogInformation($"New Employee Who ID:{newEmployee.Id} Added!..");
+
+            return Ok(newEmployee);
         }
     }
 }
