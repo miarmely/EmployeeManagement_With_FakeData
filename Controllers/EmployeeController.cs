@@ -1,6 +1,7 @@
 ﻿using EmployeeManagement.Data;
 using EmployeeManagement.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 
 
 namespace EmployeeManagement.Controllers
@@ -143,6 +144,26 @@ namespace EmployeeManagement.Controllers
             _logger.LogWarning($"Employe Who ID:{id} Updated!..");
 
             return Ok(newEmployee);
+        }
+
+
+        [HttpPatch("{id:int}")]
+        public IActionResult UpdateEmployee([FromRoute(Name = "id")] int id, [FromBody] JsonPatchDocument<Employee> employeePatch)
+        {
+            var entity = FakeData.Employees.Find(E => E.ID == id);
+
+            // when ID Not Found
+            if (entity is null)
+                return NotFound(new
+                {
+                    statusCode = 404,
+                    message = $"ID:{id} Not Found On Database!.."
+                });
+
+            employeePatch.ApplyTo(entity);
+            _logger.LogWarning($"Employee Who ID:{id} Updated");
+
+            return Ok(entity);
         }
     }
 }
