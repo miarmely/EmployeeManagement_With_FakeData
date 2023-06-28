@@ -113,5 +113,36 @@ namespace EmployeeManagement.Controllers
 
             return NoContent();
         }
+
+
+        [HttpPut("{id:int}")]
+        public IActionResult UpdateEmployee([FromRoute(Name = "id")] int id, [FromBody] Employee newEmployee)
+        {
+            var entity = FakeData.Employees.Find(e => e.ID == id);
+
+            // when ID Not Found
+            if (entity is null)
+                return NotFound(new
+                {
+                    statusCode = 404,
+                    message = $"ID:{id} Not Found On Database!.."
+                });
+
+            var tempEntity = FakeData.Employees.Find(e => e.ID == newEmployee.ID);
+
+            // when new employee ID is already exists
+            if (tempEntity is not null)
+                return BadRequest(new
+                {
+                    statusCode = 400,
+                    message = $"ID:{newEmployee.ID} Is Already Exists On Database! Please Enter Different ID..."
+                });
+
+            FakeData.Employees.Remove(entity);
+            FakeData.Employees.Add(newEmployee);
+            _logger.LogWarning($"Employe Who ID:{id} Updated!..");
+
+            return Ok(newEmployee);
+        }
     }
 }
